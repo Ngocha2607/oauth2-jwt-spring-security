@@ -1,13 +1,13 @@
 server:
   port: 8080
   servlet:
-    context-path: "/ecommerce"
+    context-path: "/api"
 
 spring:
   application:
     name: "eCommerce"
   datasource:
-    url: "jdbc:mysql://localhost:3306/ecommerce?createDatabaseIfNotExist=true"
+    url: "jdbc:mysql://localhost:3306/ecommerce-dev?createDatabaseIfNotExist=true"
     username: root
     password: 26072000Ha.
     driver-class-name: com.mysql.cj.jdbc.Driver
