@@ -1,9 +1,8 @@
 package com.springboot.eCommerce.entity;
 
+import com.springboot.eCommerce.dto.request.UserCreationRequest;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
@@ -11,6 +10,8 @@ import java.time.LocalDate;
 @Table(name = "users")
 @Data
 public class User {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -19,4 +20,16 @@ public class User {
     private String firstName;
     private String lastName;
     private LocalDate dob;
+
+    public User() {
+
+    };
+
+    public User(UserCreationRequest request) {
+        this.username = request.getUsername();
+        this.password = request.getPassword();
+        this.firstName = request.getFirstName();
+        this.lastName = request.getLastName();
+        this.dob = request.getDob();
+    }
 }
