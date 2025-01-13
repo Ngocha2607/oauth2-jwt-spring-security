@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserServiceInterface {
      UserRepository userRepository;
      ModelMapper modelMapper;
+     PasswordEncoder passwordEncoder;
 
     @Override
     public ApiResponse<UserResponse> createRequest(UserCreationRequest request) {
@@ -34,6 +36,7 @@ public class UserServiceImpl implements UserServiceInterface {
         if(userRepository.existsByUsername(request.getUsername()))
             throw new AppException(ErrorCode.EXISTED_USER);
         User user = new User(request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
         UserResponse userResponse = modelMapper.map(user, UserResponse.class);
         return new ApiResponse<>(userResponse);
