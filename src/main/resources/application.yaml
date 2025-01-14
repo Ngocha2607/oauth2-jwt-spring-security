@@ -25,3 +25,6 @@ logging:
     org:
       springframework:
         security: debug
+
+jwt:
+  signerKey: "N63ovOSTkXu/FKEHw3O6zewRhBW7IXuFYJUjDIBezE6uBhrNYw/dVtCmGPz5rexb"

@@ -7,12 +7,14 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthenticationResponse {
+    String token;
     boolean authenticated;
 
     public AuthenticationResponse() {
     }
 
-    public AuthenticationResponse(boolean authenticated) {
+    public AuthenticationResponse(boolean authenticated, String token) {
         this.authenticated = authenticated;
+        this.token = token;
     }
 }
