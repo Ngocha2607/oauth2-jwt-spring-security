@@ -49,8 +49,10 @@ public class AuthenticationServiceImpl implements AuthenticationServiceInterface
         );
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
+        if(!authenticated)
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         String token = generateToken(user.getUsername());
-        AuthenticationResponse authenticationResponse = new AuthenticationResponse(authenticated, token);
+        AuthenticationResponse authenticationResponse = new AuthenticationResponse(true, token);
         return new ApiResponse<>(authenticationResponse);
     }
 
