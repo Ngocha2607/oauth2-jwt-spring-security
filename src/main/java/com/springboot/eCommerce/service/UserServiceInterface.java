@@ -12,6 +12,7 @@ public interface UserServiceInterface {
     ApiResponse<UserResponse> createRequest(UserCreationRequest request);
     List<UserResponse> getUsers();
     UserResponse getUser(String userId);
+    UserResponse getMyInfo();
     UserResponse updateUser(String userId, UserUpdationRequest request);
     void deleteUser(String userId);
 }

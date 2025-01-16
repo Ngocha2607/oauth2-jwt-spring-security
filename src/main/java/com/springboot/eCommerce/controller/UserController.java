@@ -7,11 +7,15 @@ import com.springboot.eCommerce.dto.response.UserResponse;
 import com.springboot.eCommerce.entity.User;
 import com.springboot.eCommerce.service.UserServiceInterface;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -26,12 +30,23 @@ public class UserController {
 
     @GetMapping("/list-all")
     List<UserResponse> getUsers() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        log.info("Login User: {}", authentication.getName());
+        authentication.getAuthorities().forEach(grantedAuthority ->
+            log.info("Scope: {}", grantedAuthority.getAuthority())
+        );
         return userServiceInterface.getUsers();
     }
 
     @GetMapping("/detail/{userId}")
     UserResponse getDetail(@PathVariable() String userId) {
         return userServiceInterface.getUser(userId);
+    }
+
+    @GetMapping("/get-my-info")
+    UserResponse getMyInfo() {
+        return userServiceInterface.getMyInfo();
     }
 
     @PutMapping("/update/{userId}")

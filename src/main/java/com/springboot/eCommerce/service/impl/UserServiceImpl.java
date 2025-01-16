@@ -14,8 +14,13 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -47,19 +53,33 @@ public class UserServiceImpl implements UserServiceInterface {
         return new ApiResponse<>(userResponse);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<UserResponse> getUsers() {
+
+        log.info("Login to vao day");
         List<User> users = userRepository.findAll();
 
         return users.stream().map(user -> {
             return modelMapper.map(user, UserResponse.class);
         }).collect(Collectors.toList());
     }
-
+    @PostAuthorize("returnObject.username == authentication.name")
     @Override
     public UserResponse getUser(String userId) {
+
+        log.info("Vao log nay");
         User user = userRepository.findById(userId).
                 orElseThrow(() -> new RuntimeException("User not found"));
+        return modelMapper.map(user, UserResponse.class);
+    }
+
+    @Override
+    public UserResponse getMyInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String name = authentication.getName();
+        User user = userRepository.findUserByUsername(name).orElseThrow(() ->
+                new AppException(ErrorCode.USER_NOT_FOUND));
         return modelMapper.map(user, UserResponse.class);
     }
 
