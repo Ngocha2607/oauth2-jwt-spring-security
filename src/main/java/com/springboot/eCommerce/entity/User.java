@@ -2,9 +2,12 @@ package com.springboot.eCommerce.entity;
 
 import com.springboot.eCommerce.dto.request.UserCreationRequest;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -20,16 +23,17 @@ public class User {
     private String firstName;
     private String lastName;
     private LocalDate dob;
+    private Set<String> roles;
 
     public User() {
 
     };
-
     public User(UserCreationRequest request) {
         this.username = request.getUsername();
         this.password = request.getPassword();
         this.firstName = request.getFirstName();
         this.lastName = request.getLastName();
         this.dob = request.getDob();
+        this.roles = request.getRoles();
     }
 }

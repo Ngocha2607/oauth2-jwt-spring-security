@@ -1,5 +1,6 @@
 package com.springboot.eCommerce.service.impl;
 
+import com.springboot.eCommerce.common.Role;
 import com.springboot.eCommerce.dto.request.UserCreationRequest;
 import com.springboot.eCommerce.dto.request.UserUpdationRequest;
 import com.springboot.eCommerce.dto.response.ApiResponse;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,9 @@ public class UserServiceImpl implements UserServiceInterface {
             throw new AppException(ErrorCode.EXISTED_USER);
         User user = new User(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        HashSet<String> roles = new HashSet<String>();
+        roles.add(Role.USER.name());
+        user.setRoles(roles);
         userRepository.save(user);
         UserResponse userResponse = modelMapper.map(user, UserResponse.class);
         return new ApiResponse<>(userResponse);
