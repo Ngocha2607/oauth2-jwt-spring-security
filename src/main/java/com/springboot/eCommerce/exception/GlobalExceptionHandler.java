@@ -3,6 +3,7 @@ package com.springboot.eCommerce.exception;
 import com.springboot.eCommerce.dto.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,7 +23,14 @@ public class GlobalExceptionHandler {
     ResponseEntity<ApiResponse<String>> runtimeExceptionHandling(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
         ApiResponse<String> apiResponse = new ApiResponse<>(errorCode.getCode(), errorCode.getMessage());
-        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiResponse, errorCode.getHttpStatus());
+    }
+
+    @ExceptionHandler(value = AuthorizationDeniedException.class)
+    ResponseEntity<ApiResponse<String>> authorizationDenyException(AuthorizationDeniedException e) {
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+        ApiResponse<String> apiResponse = new ApiResponse<>(errorCode.getCode(), errorCode.getMessage());
+        return new ResponseEntity<>(apiResponse, errorCode.getHttpStatus());
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
