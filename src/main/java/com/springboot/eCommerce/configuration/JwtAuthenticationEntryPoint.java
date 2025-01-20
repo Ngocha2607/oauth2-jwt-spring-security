@@ -1,5 +1,6 @@
 package com.springboot.eCommerce.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.eCommerce.dto.response.ApiResponse;
 import com.springboot.eCommerce.exception.ErrorCode;
 import jakarta.servlet.ServletException;
@@ -26,7 +27,11 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         ApiResponse<String> apiResponse = new ApiResponse<>(errorCode.getCode(), errorCode.getMessage());
 
+        ObjectMapper objectMapper = new ObjectMapper();
 
+        response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
+
+        response.flushBuffer();
 
     }
 }
