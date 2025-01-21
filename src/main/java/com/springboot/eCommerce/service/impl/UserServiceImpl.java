@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserServiceInterface {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         HashSet<String> roles = new HashSet<String>();
         roles.add(Role.USER.name());
-        user.setRoles(roles);
+//        user.setRoles(roles);
         userRepository.save(user);
         UserResponse userResponse = modelMapper.map(user, UserResponse.class);
         return new ApiResponse<>(userResponse);
@@ -67,8 +67,6 @@ public class UserServiceImpl implements UserServiceInterface {
     @PostAuthorize("returnObject.username == authentication.name")
     @Override
     public UserResponse getUser(String userId) {
-
-        log.info("Vao log nay");
         User user = userRepository.findById(userId).
                 orElseThrow(() -> new RuntimeException("User not found"));
         return modelMapper.map(user, UserResponse.class);

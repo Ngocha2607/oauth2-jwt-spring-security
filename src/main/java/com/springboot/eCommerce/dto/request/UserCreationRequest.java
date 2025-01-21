@@ -1,5 +1,6 @@
 package com.springboot.eCommerce.dto.request;
 
+import com.springboot.eCommerce.entity.Role;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,5 +22,5 @@ public class UserCreationRequest {
     private String firstName;
     private String lastName;
     private LocalDate dob;
-    private Set<String> roles;
+    private Set<Role> roles;
 }

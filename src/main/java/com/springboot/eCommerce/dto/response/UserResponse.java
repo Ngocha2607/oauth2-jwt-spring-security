@@ -1,5 +1,6 @@
 package com.springboot.eCommerce.dto.response;
 
+import com.springboot.eCommerce.entity.Role;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -13,5 +14,5 @@ public class UserResponse {
     private String firstName;
     private String lastName;
     private LocalDate dob;
-    private Set<String> roles;
+    private Set<Role> roles;
 }

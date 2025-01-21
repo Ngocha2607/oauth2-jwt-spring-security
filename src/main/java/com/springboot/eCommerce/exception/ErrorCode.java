@@ -14,6 +14,9 @@ public enum ErrorCode {
     USER_NOT_FOUND(1005, "User Not Found", HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "You don't have permission", HttpStatus.FORBIDDEN),
+    PERMISSION_NAME_INVALID(1008, "Permission name must be at least 3 characters", HttpStatus.BAD_REQUEST),
+    ROLE_NAME_INVALID(1008, "Role name must be at least 3 characters", HttpStatus.BAD_REQUEST),
+
     ;
     private int code;
     private String message;
