@@ -23,13 +23,14 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {"/users/**", "/auth/**"};
-
+    private final String[] SWAGGER_ENDPOINTS = {"/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/*", "/api-docs/**"};
     @Value("${jwt.signerKey}")
     private String signerKey;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(SWAGGER_ENDPOINTS).permitAll()
 //                        .requestMatchers(HttpMethod.GET, "/users/list-all").hasRole(Role.ADMIN.name())
                         .anyRequest().authenticated()
                 );
