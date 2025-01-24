@@ -35,6 +35,5 @@ public class User {
         this.firstName = request.getFirstName();
         this.lastName = request.getLastName();
         this.dob = request.getDob();
-        this.roles = request.getRoles();
     }
 }

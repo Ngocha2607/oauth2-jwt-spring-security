@@ -1,13 +1,14 @@
 package com.springboot.eCommerce.service.impl;
 
-import com.springboot.eCommerce.common.Role;
 import com.springboot.eCommerce.dto.request.UserCreationRequest;
 import com.springboot.eCommerce.dto.request.UserUpdationRequest;
 import com.springboot.eCommerce.dto.response.ApiResponse;
 import com.springboot.eCommerce.dto.response.UserResponse;
+import com.springboot.eCommerce.entity.Role;
 import com.springboot.eCommerce.entity.User;
 import com.springboot.eCommerce.exception.AppException;
 import com.springboot.eCommerce.exception.ErrorCode;
+import com.springboot.eCommerce.repository.RoleRepository;
 import com.springboot.eCommerce.repository.UserRepository;
 import com.springboot.eCommerce.service.UserServiceInterface;
 import jakarta.transaction.Transactional;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserServiceImpl implements UserServiceInterface {
+    RoleRepository roleRepository;
      UserRepository userRepository;
      ModelMapper modelMapper;
      PasswordEncoder passwordEncoder;
@@ -45,19 +47,20 @@ public class UserServiceImpl implements UserServiceInterface {
             throw new AppException(ErrorCode.EXISTED_USER);
         User user = new User(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        HashSet<String> roles = new HashSet<String>();
-        roles.add(Role.USER.name());
-//        user.setRoles(roles);
+        List<Role> roles = roleRepository.findAllById(request.getRoles());
+
+        user.setRoles(new HashSet<>(roles));
         userRepository.save(user);
         UserResponse userResponse = modelMapper.map(user, UserResponse.class);
         return new ApiResponse<>(userResponse);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('APPROVE_POST')")
+    @PreAuthorize("hasAuthority('APPROVE_POST')")
+
     @Override
     public List<UserResponse> getUsers() {
 
-        log.info("Login to vao day");
         List<User> users = userRepository.findAll();
 
         return users.stream().map(user -> {
@@ -86,10 +89,13 @@ public class UserServiceImpl implements UserServiceInterface {
         User user = userRepository.findById(userId).
                 orElseThrow(() -> new RuntimeException("User not found"));
 
-            user.setPassword(request.getPassword());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
             user.setFirstName(request.getFirstName());
             user.setLastName(request.getLastName());
             user.setDob(request.getDob());
+        List<Role> roles = roleRepository.findAllById(request.getRoles());
+
+        user.setRoles(new HashSet<>(roles));
         userRepository.save(user);
             return modelMapper.map(user, UserResponse.class);
     }

@@ -22,5 +22,5 @@ public class UserCreationRequest {
     private String firstName;
     private String lastName;
     private LocalDate dob;
-    private Set<Role> roles;
+    private Set<String> roles;
 }
