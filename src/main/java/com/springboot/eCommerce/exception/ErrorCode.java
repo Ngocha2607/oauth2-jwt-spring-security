@@ -15,7 +15,8 @@ public enum ErrorCode {
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "You don't have permission", HttpStatus.FORBIDDEN),
     PERMISSION_NAME_INVALID(1008, "Permission name must be at least 3 characters", HttpStatus.BAD_REQUEST),
-    ROLE_NAME_INVALID(1008, "Role name must be at least 3 characters", HttpStatus.BAD_REQUEST),
+    ROLE_NAME_INVALID(1009, "Role name must be at least 3 characters", HttpStatus.BAD_REQUEST),
+    DOB_INVALID(1010, "Invalid date of birth", HttpStatus.BAD_REQUEST),
 
     ;
     private int code;

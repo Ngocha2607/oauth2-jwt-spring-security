@@ -1,11 +1,9 @@
 package com.springboot.eCommerce.dto.request;
 
-import com.springboot.eCommerce.entity.Role;
+import com.springboot.eCommerce.validator.DobConstraint;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -21,6 +19,8 @@ public class UserCreationRequest {
     private String password;
     private String firstName;
     private String lastName;
+
+    @DobConstraint(min = 18, message = "DOB_INVALID")
     private LocalDate dob;
     private Set<String> roles;
 }
