@@ -6,7 +6,6 @@ import com.springboot.eCommerce.dto.response.ApiResponse;
 import com.springboot.eCommerce.dto.response.UserResponse;
 import com.springboot.eCommerce.entity.User;
 import com.springboot.eCommerce.service.UserServiceInterface;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@SecurityRequirement(name = "eCommerce Application")
 @RequestMapping("/users")
 public class UserController {
     @Autowired

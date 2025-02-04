@@ -23,7 +23,6 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     ApiResponse<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
-
         return authenticationServiceInterface.login(request);
     }
 
@@ -32,6 +31,11 @@ public class AuthenticationController {
         return authenticationServiceInterface.introspect(request);
     }
 
+    @PostMapping("/refresh-token")
+    ApiResponse<AuthenticationResponse> refreshToken(@RequestBody RefreshTokenRequest request) throws ParseException, JOSEException {
+
+        return authenticationServiceInterface.refreshToken(request);
+    }
     @PostMapping("/logout")
     void logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationServiceInterface.logout(request);

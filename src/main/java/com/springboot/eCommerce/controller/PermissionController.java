@@ -4,7 +4,6 @@ import com.springboot.eCommerce.dto.request.PermissionCreationRequest;
 import com.springboot.eCommerce.dto.response.ApiResponse;
 import com.springboot.eCommerce.dto.response.PermissionResponse;
 import com.springboot.eCommerce.service.PermissionServiceInterface;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@SecurityRequirement(name = "eCommerce Application")
 @RequestMapping("/permissions")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)

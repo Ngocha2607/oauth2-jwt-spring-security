@@ -57,7 +57,6 @@ public class UserServiceImpl implements UserServiceInterface {
 
 //    @PreAuthorize("hasRole('APPROVE_POST')")
     @PreAuthorize("hasAuthority('APPROVE_POST')")
-
     @Override
     public List<UserResponse> getUsers() {
 

@@ -8,6 +8,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.springboot.eCommerce.dto.request.AuthenticationRequest;
 import com.springboot.eCommerce.dto.request.IntrospectRequest;
 import com.springboot.eCommerce.dto.request.LogoutRequest;
+import com.springboot.eCommerce.dto.request.RefreshTokenRequest;
 import com.springboot.eCommerce.dto.response.ApiResponse;
 import com.springboot.eCommerce.dto.response.AuthenticationResponse;
 import com.springboot.eCommerce.dto.response.IntrospectResponse;
@@ -58,6 +59,26 @@ public class AuthenticationServiceImpl implements AuthenticationServiceInterface
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if(!authenticated)
             throw new AppException(ErrorCode.UNAUTHENTICATED);
+        String token = generateToken(user);
+        AuthenticationResponse authenticationResponse = new AuthenticationResponse(true, token);
+        return new ApiResponse<>(authenticationResponse);
+    }
+
+    @Override
+    public ApiResponse<AuthenticationResponse> refreshToken(RefreshTokenRequest request) throws ParseException, JOSEException {
+        var signToken = verifyToken(request.getToken());
+
+        Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+        String jit = signToken.getJWTClaimsSet().getJWTID();
+        InvalidatedToken invalidatedToken = new InvalidatedToken(jit, expiryTime);
+        invalidatedTokenRepository.save(invalidatedToken);
+
+        User user = userRepository.findUserByUsername(signToken.getJWTClaimsSet().getSubject()).orElseThrow(
+                () -> {
+                    throw new AppException(ErrorCode.UNAUTHENTICATED);
+                }
+        );
+
         String token = generateToken(user);
         AuthenticationResponse authenticationResponse = new AuthenticationResponse(true, token);
         return new ApiResponse<>(authenticationResponse);

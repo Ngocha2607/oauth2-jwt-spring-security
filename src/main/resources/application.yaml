@@ -30,12 +30,16 @@ jwt:
   signerKey: "N63ovOSTkXu/FKEHw3O6zewRhBW7IXuFYJUjDIBezE6uBhrNYw/dVtCmGPz5rexb"
 
 #Swagger OpenAPI
+#For sorting endpoints alphabetically
 springdoc:
   swagger-ui:
     operationsSorter: alpha
+  #For sorting tags alphabetically
     tagsSorter: alpha
+
+  #to remove doc expansion
     doc-expansion: false
     enable: true
-#    path: "/swagger-ui.html"
+    path: /swagger-ui.html
   api-docs:
-    path: "/api-docs"
+    path: /api-docs
