@@ -7,12 +7,15 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.springboot.eCommerce.dto.request.AuthenticationRequest;
 import com.springboot.eCommerce.dto.request.IntrospectRequest;
+import com.springboot.eCommerce.dto.request.LogoutRequest;
 import com.springboot.eCommerce.dto.response.ApiResponse;
 import com.springboot.eCommerce.dto.response.AuthenticationResponse;
 import com.springboot.eCommerce.dto.response.IntrospectResponse;
+import com.springboot.eCommerce.entity.InvalidatedToken;
 import com.springboot.eCommerce.entity.User;
 import com.springboot.eCommerce.exception.AppException;
 import com.springboot.eCommerce.exception.ErrorCode;
+import com.springboot.eCommerce.repository.InvalidatedTokenRepository;
 import com.springboot.eCommerce.repository.UserRepository;
 import com.springboot.eCommerce.service.AuthenticationServiceInterface;
 import jakarta.transaction.Transactional;
@@ -31,6 +34,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -39,6 +43,7 @@ import java.util.StringJoiner;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationServiceImpl implements AuthenticationServiceInterface {
     UserRepository userRepository;
+    InvalidatedTokenRepository invalidatedTokenRepository;
     PasswordEncoder passwordEncoder;
 
     @NonFinal
@@ -59,17 +64,29 @@ public class AuthenticationServiceImpl implements AuthenticationServiceInterface
     }
 
     @Override
+    public void logout(LogoutRequest request) throws JOSEException, ParseException {
+        String token = request.getToken();
+        var signToken = verifyToken(token);
+
+        Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+        String jit = signToken.getJWTClaimsSet().getJWTID();
+        InvalidatedToken invalidatedToken = new InvalidatedToken(jit, expiryTime);
+        invalidatedTokenRepository.save(invalidatedToken);
+    }
+
+    @Override
     public ApiResponse<IntrospectResponse> introspect(IntrospectRequest request) throws JOSEException, ParseException {
 
         String token = request.getToken();
+        boolean isValid = true;
+        try {
+            verifyToken(token);
+        } catch (Exception e) {
+            isValid = false;
+        }
 
-        JWSVerifier jwsVerifier = new MACVerifier(SIGNER_KEY.getBytes());
-        SignedJWT signedJWT = SignedJWT.parse(token);
 
-        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-        boolean valid = signedJWT.verify(jwsVerifier);
-        IntrospectResponse introspectResponse = new IntrospectResponse(valid && expiryTime.after(new Date()));
-
+        IntrospectResponse introspectResponse = new IntrospectResponse(isValid);
         return new ApiResponse<>(introspectResponse);
     }
 
@@ -82,6 +99,7 @@ public class AuthenticationServiceImpl implements AuthenticationServiceInterface
                 .expirationTime(new Date(
                         Instant.now().plus(2, ChronoUnit.HOURS).toEpochMilli()
                 ))
+                .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
 
         .build();
@@ -109,5 +127,18 @@ public class AuthenticationServiceImpl implements AuthenticationServiceInterface
             );
 
         return stringJoiner.toString();
+    }
+
+    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+        JWSVerifier jwsVerifier = new MACVerifier(SIGNER_KEY.getBytes());
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        boolean valid = signedJWT.verify(jwsVerifier);
+        if(!(valid && expiryTime.after(new Date())))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        if(invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        return signedJWT;
     }
 }

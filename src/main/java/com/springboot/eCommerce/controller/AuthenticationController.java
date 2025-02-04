@@ -1,10 +1,7 @@
 package com.springboot.eCommerce.controller;
 
 import com.nimbusds.jose.JOSEException;
-import com.springboot.eCommerce.dto.request.AuthenticationRequest;
-import com.springboot.eCommerce.dto.request.IntrospectRequest;
-import com.springboot.eCommerce.dto.request.UserCreationRequest;
-import com.springboot.eCommerce.dto.request.UserUpdationRequest;
+import com.springboot.eCommerce.dto.request.*;
 import com.springboot.eCommerce.dto.response.ApiResponse;
 import com.springboot.eCommerce.dto.response.AuthenticationResponse;
 import com.springboot.eCommerce.dto.response.IntrospectResponse;
@@ -33,6 +30,11 @@ public class AuthenticationController {
     @PostMapping("/verify-token")
     ApiResponse<IntrospectResponse> verifyToken(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
         return authenticationServiceInterface.introspect(request);
+    }
+
+    @PostMapping("/logout")
+    void logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+        authenticationServiceInterface.logout(request);
     }
 
 }
