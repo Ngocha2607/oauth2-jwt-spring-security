@@ -28,7 +28,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/verify-token")
-    ApiResponse<IntrospectResponse> verifyToken(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
+    IntrospectResponse verifyToken(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
         return authenticationServiceInterface.introspect(request);
     }
 

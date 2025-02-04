@@ -13,5 +13,5 @@ import java.text.ParseException;
 public interface AuthenticationServiceInterface {
     ApiResponse<AuthenticationResponse> login(AuthenticationRequest request);
     void logout(LogoutRequest request) throws JOSEException, ParseException;
-    ApiResponse<IntrospectResponse> introspect(IntrospectRequest request) throws JOSEException, ParseException;
+    IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException;
 }

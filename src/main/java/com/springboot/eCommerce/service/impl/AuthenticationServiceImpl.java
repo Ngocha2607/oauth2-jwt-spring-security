@@ -75,19 +75,18 @@ public class AuthenticationServiceImpl implements AuthenticationServiceInterface
     }
 
     @Override
-    public ApiResponse<IntrospectResponse> introspect(IntrospectRequest request) throws JOSEException, ParseException {
+    public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
 
         String token = request.getToken();
         boolean isValid = true;
         try {
             verifyToken(token);
-        } catch (Exception e) {
+        } catch (AppException e) {
             isValid = false;
         }
 
 
-        IntrospectResponse introspectResponse = new IntrospectResponse(isValid);
-        return new ApiResponse<>(introspectResponse);
+        return new IntrospectResponse(isValid);
     }
 
     private String generateToken(User user) {
