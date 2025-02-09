@@ -2,7 +2,6 @@ package com.springboot.eCommerce.configuration;
 
 import com.springboot.eCommerce.common.Role;
 import com.springboot.eCommerce.dto.request.UserCreationRequest;
-import com.springboot.eCommerce.dto.response.UserResponse;
 import com.springboot.eCommerce.entity.User;
 import com.springboot.eCommerce.repository.UserRepository;
 import lombok.AccessLevel;
@@ -31,15 +30,11 @@ public class ApplicationInitConfig {
             if(!userRepository.existsByUsername("admin")) {
                 HashSet<String> roles = new HashSet<String>();
                 roles.add(Role.ADMIN.name());
-
-                UserCreationRequest userCreationRequest = UserCreationRequest
-                        .builder()
+                User user = User.builder()
                         .username("admin")
                         .password(passwordEncoder.encode("admin"))
 //                        .roles(roles)
                         .build();
-
-                User user = new User(userCreationRequest);
 
                 userRepository.save(user);
                 log.warn("Admin user has been created with default password: admin, please change it");

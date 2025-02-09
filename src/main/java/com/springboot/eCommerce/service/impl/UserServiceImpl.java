@@ -45,13 +45,18 @@ public class UserServiceImpl implements UserServiceInterface {
 
         if(userRepository.existsByUsername(request.getUsername()))
             throw new AppException(ErrorCode.EXISTED_USER);
-        User user = new User(request);
+        User user = User.builder()
+                .username(request.getUsername())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .dob(request.getDob())
+                .build();
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         List<Role> roles = roleRepository.findAllById(request.getRoles());
 
         user.setRoles(new HashSet<>(roles));
-        userRepository.save(user);
-        UserResponse userResponse = modelMapper.map(user, UserResponse.class);
+        User savedUser = userRepository.save(user);
+        UserResponse userResponse = modelMapper.map(savedUser, UserResponse.class);
         return new ApiResponse<>(userResponse);
     }
 
