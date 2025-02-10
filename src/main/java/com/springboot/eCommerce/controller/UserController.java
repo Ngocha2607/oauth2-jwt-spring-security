@@ -3,6 +3,7 @@ package com.springboot.eCommerce.controller;
 import com.springboot.eCommerce.dto.request.UserCreationRequest;
 import com.springboot.eCommerce.dto.request.UserUpdationRequest;
 import com.springboot.eCommerce.dto.response.ApiResponse;
+import com.springboot.eCommerce.dto.response.UserPaginationResponse;
 import com.springboot.eCommerce.dto.response.UserResponse;
 import com.springboot.eCommerce.entity.User;
 import com.springboot.eCommerce.service.UserServiceInterface;
@@ -37,6 +38,16 @@ public class UserController {
             log.info("Scope: {}", grantedAuthority.getAuthority())
         );
         return userServiceInterface.getUsers();
+    }
+
+    @GetMapping("/list-pagination")
+    UserPaginationResponse getPaginationUsers(
+            @RequestParam(name = "pageSize", required = false, defaultValue = "30") Integer pageSize,
+            @RequestParam(name = "pageIndex", required = false, defaultValue = "0") Integer pageIndex,
+            @RequestParam(name = "sort", required = false, defaultValue = "ASC") String sort
+    ) {
+
+        return userServiceInterface.getPaginationUsers(pageSize, pageIndex, sort);
     }
 
     @GetMapping("/detail/{userId}")

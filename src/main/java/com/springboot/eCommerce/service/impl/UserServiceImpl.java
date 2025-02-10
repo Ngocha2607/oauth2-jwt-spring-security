@@ -3,6 +3,7 @@ package com.springboot.eCommerce.service.impl;
 import com.springboot.eCommerce.dto.request.UserCreationRequest;
 import com.springboot.eCommerce.dto.request.UserUpdationRequest;
 import com.springboot.eCommerce.dto.response.ApiResponse;
+import com.springboot.eCommerce.dto.response.UserPaginationResponse;
 import com.springboot.eCommerce.dto.response.UserResponse;
 import com.springboot.eCommerce.entity.Role;
 import com.springboot.eCommerce.entity.User;
@@ -18,6 +19,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -71,6 +76,40 @@ public class UserServiceImpl implements UserServiceInterface {
             return modelMapper.map(user, UserResponse.class);
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public UserPaginationResponse getPaginationUsers(Integer pageSize, Integer pageIndex, String sort) {
+        Sort sortable = null;
+        if(sort.equals("ASC")) {
+            sortable = Sort.by("id").ascending();
+        }
+        if(sort.equals("DESC")) {
+            sortable =Sort.by("id").descending();
+        }
+        assert sortable != null;
+        Pageable pageable = PageRequest.of(pageIndex, pageSize, sortable);
+
+        var userPage = userRepository.findAll(pageable);
+
+        List<User> users = userPage.getContent();
+
+        if(users.isEmpty()) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+        List<UserResponse> userResponses = users.stream().map(user ->
+                modelMapper.map(user, UserResponse.class)).toList();
+
+        return UserPaginationResponse.builder()
+                .content(userResponses)
+                .pageNumber(userPage.getNumber())
+                .pageSize(userPage.getSize())
+                .totalPages(userPage.getTotalPages())
+                .totalElements(userPage.getTotalElements())
+                .lastPage(userPage.isLast())
+                .build();
+
+    }
+
     @PostAuthorize("returnObject.username == authentication.name")
     @Override
     public UserResponse getUser(String userId) {
